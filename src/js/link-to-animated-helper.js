@@ -39,6 +39,7 @@ Ember.onLoad('Ember.Handlebars', function(Handlebars) {
     @extends Ember.LinkView
   **/
   var AnimatedLinkView = Ember.AnimatedLinkView = Ember.LinkView.extend({
+    classNames: ['animated-link-view'],
     _invoke: function(event) {
       if (!isSimpleClick(event)) { return true; }
 
@@ -97,7 +98,7 @@ Ember.onLoad('Ember.Handlebars', function(Handlebars) {
 
     return Ember.Handlebars.helpers.view.call(this, AnimatedLinkView, options);
   });
-  
+
   /**
     See link-to-animated
 

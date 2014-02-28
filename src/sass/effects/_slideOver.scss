@@ -1,3 +1,6 @@
+// iOS Timing
+$timing-function: cubic-beizer(0.1,  0.7,  0.1,  1);
+
 .ember-animated-container-slideOver-old {
     z-index: 1;
 }
@@ -7,7 +10,7 @@
 .ember-animated-container-slideOver-down-new {
     @include transition-property(transform);
     @include transition-duration(0.4s);
-    @include transition-timing-function(ease-out);
+    @include transition-timing-function($timing-function);
     @include transform(translateX(0%));
     z-index: 2;
 

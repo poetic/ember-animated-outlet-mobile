@@ -1,14 +1,21 @@
+// iOS Timing
+$timing-function: cubic-beizer(0.1,  0.7,  0.1,  1);
+
 .ember-animated-container-slide-left-ct,
 .ember-animated-container-slide-right-ct,
 .ember-animated-container-slide-up-ct,
 .ember-animated-container-slide-down-ct {
     @include transition-property(transform);
     @include transition-duration(0.4s);
-    @include transition-timing-function(ease-out);
+    @include transition-timing-function($timing-function);
     
     &.ember-animated-container-slide-slow-ct {
         @include transition-duration(2s);
     }
+}
+.ember-animated-container-slide-right-ct,
+.ember-animated-container-slide-down-ct {
+    @include transition-duration(0.3s);
 }
 
 .ember-animated-container-slide-left-ct-sliding {

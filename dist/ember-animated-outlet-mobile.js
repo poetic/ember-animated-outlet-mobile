@@ -250,6 +250,7 @@ Ember.onLoad('Ember.Handlebars', function(Handlebars) {
     @extends Ember.LinkView
   **/
   var AnimatedLinkView = Ember.AnimatedLinkView = Ember.LinkView.extend({
+    classNames: ['animated-link-view'],
     _invoke: function(event) {
       if (!isSimpleClick(event)) { return true; }
 
@@ -308,7 +309,7 @@ Ember.onLoad('Ember.Handlebars', function(Handlebars) {
 
     return Ember.Handlebars.helpers.view.call(this, AnimatedLinkView, options);
   });
-  
+
   /**
     See link-to-animated
 
@@ -446,7 +447,7 @@ Ember.AnimatedContainerView.registerEffect('flip', function(ct, newView, oldView
     }, 0);
 });
 (function() {
-    
+
 var slide = function(ct, newView, oldView, callback, direction, slow) {
     var ctEl = ct.$(),
         newEl = newView.$(),
@@ -465,9 +466,7 @@ var slide = function(ct, newView, oldView, callback, direction, slow) {
             }
             ctEl.removeClass('ember-animated-container-slide-'+direction+'-ct-sliding');
             newEl.removeClass('ember-animated-container-slide-'+direction+'-new');
-            setTimeout(function() {
-                callback();
-            }, 0);
+            callback();
         }, duration);
     }, 0);
 };
@@ -491,7 +490,7 @@ Ember.AnimatedContainerView.registerEffect('slideDown', function(ct, newView, ol
 Ember.AnimatedContainerView.registerEffect('slowSlideLeft', function(ct, newView, oldView, callback) {
     slide(ct, newView, oldView, callback, 'left', true);
 });
-    
+
 Ember.AnimatedContainerView.registerEffect('slowSlideRight', function(ct, newView, oldView, callback) {
     slide(ct, newView, oldView, callback, 'right', true);
 });
@@ -505,6 +504,7 @@ Ember.AnimatedContainerView.registerEffect('slowSlideDown', function(ct, newView
 });
 
 })();
+
 (function() {
 
 var slideOver = function(ct, newView, oldView, callback, direction) {
@@ -541,3 +541,147 @@ Ember.AnimatedContainerView.registerEffect('slideOverDown', function(ct, newView
 });
 
 })();
+
+/*
+ https://github.com/JamesHight/emberjs-touch
+
+ Copyright (c) 2012 by:
+
+ * James Hight
+ *
+ * Update to support ember-animated-outlet by Jake Craige 2013
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+
+(function(){
+  var touch = {
+    start: false, // has the touchstart event been triggered and is it still a valid click event?
+    // starting coordinates of touch event
+    x: null,
+    y: null,
+    enabled: true
+  };
+
+
+  // Temporarily disable touch to prevent duplicate clicks
+  function disableTouch() {
+    if (touch.enabled) {
+      touch.enabled = false;
+      setTimeout(function() {
+        touch.enabled = true;
+      }, 400);
+    }
+  }
+
+  Ember.EventDispatcher.reopen({
+    setupHandler: function(rootElement, event, eventName) {
+      var self = this,
+        moved;
+
+      if (!touch.enabled) return;
+
+      var touchHandler = function(evt, triggeringManager) {
+        // Track touch events to see how far the user's finger has moved
+        // If it is > 20 it will not trigger a click event
+
+        switch(evt.type) {
+          // Remember our starting point
+          case 'touchstart':
+            touch.start = true;
+            touch.x = evt.originalEvent.touches[0].clientX;
+            touch.y = evt.originalEvent.touches[0].clientY;
+            evt.stopPropagation();
+            break;
+
+          // Monitor touchmove in case the user moves their finger away and then back to the original starting point
+          case 'touchmove':
+            if (touch.start) {
+              moved = Math.max(Math.abs(evt.originalEvent.touches[0].clientX - touch.x),
+                      Math.abs(evt.originalEvent.touches[0].clientY - touch.y));
+              if (moved > 20)
+                touch.start = false;
+            }
+            break;
+
+          // Check end point
+          case 'touchend':
+            if (touch.start) {
+              moved = Math.max(Math.abs(evt.originalEvent.changedTouches[0].clientX - touch.x),
+                    Math.abs(evt.originalEvent.changedTouches[0].clientY - touch.y));
+              if (moved < 20) {
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+                // All tests have passed, trigger click event
+                if (touch.enabled) {
+                  setTimeout(function(){
+                    $(evt.target).click();
+                  }, 50);
+                }
+              }
+              touch.start = false;
+            }
+            break;
+        }
+
+        // END touch code
+
+        var view = Ember.View.views[this.id],
+        result = true, manager = null;
+
+        manager = self._findNearestEventManager(view,eventName);
+
+        if (manager && manager !== triggeringManager) {
+          if (eventName == 'click') {
+            if (touch.enabled)
+              disableTouch();
+            else
+              return false;
+          }
+          result = self._dispatchEvent(manager, evt, eventName, view);
+        } else if (view) {
+          result = self._bubbleEvent(view,evt,eventName);
+        } else {
+          evt.stopPropagation();
+        }
+
+        return result;
+      }
+
+      rootElement.delegate('.ember-view', event + '.ember', function(evt, triggeringManager) {
+        return touchHandler.call(this, evt, triggeringManager)
+      });
+
+      rootElement.delegate('[data-ember-action]', event + '.ember', function(evt) {
+        var actionId = Ember.$(evt.currentTarget).attr('data-ember-action'),
+          action   = Ember.Handlebars.ActionHelper.registeredActions[actionId],
+          handler  = action.handler;
+
+        if (action.eventName === eventName) {
+          if (touch.enabled)
+            disableTouch();
+          else
+            return false;
+
+          return handler(evt);
+        }
+      });
+
+      rootElement.delegate('.animated-link-view', event + '.ember', function(evt, triggeringManager) {
+        return touchHandler.call(this, evt, triggeringManager)
+      });
+    }
+  });
+})();
+
