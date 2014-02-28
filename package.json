@@ -1,5 +1,5 @@
 {
-  "name": "ember-animated-outlet",
+  "name": "ember-animated-outlet-mobile",
   "version": "0.0.1",
   "devDependencies": {
     "grunt": "~0.4.1",

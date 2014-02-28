@@ -18,13 +18,13 @@ module.exports = function(grunt) {
                     'src/js/controller-mixin.js',
                     'src/js/effects/*.js'
                 ],
-                dest: 'dist/ember-animated-outlet.js'
+                dest: 'dist/ember-animated-outlet-mobile.js'
             }
         },
         uglify: {
             dist: {
-                src: ['dist/ember-animated-outlet.js'],
-                dest: 'dist/ember-animated-outlet.min.js'
+                src: ['dist/ember-animated-outlet-mobile.js'],
+                dest: 'dist/ember-animated-outlet-mobile.min.js'
             }
         },
         compass: {
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+
     grunt.registerTask('default', ['concat', 'uglify', 'compass']);
 
 };
