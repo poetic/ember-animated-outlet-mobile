@@ -1,12 +1,11 @@
 {
   "name": "ember-animated-outlet-mobile",
-  "version": "1.0.0-beta.2",
+  "version": "0.0.1",
   "homepage": "https://github.com/poetic/ember-animated-outlet-mobile",
   "authors": [
-    "Sebastian Seilund <sebastian@billysbilling.com>",
     "Jake Craige <jake@poeticsystems.com>"
   ],
-  "description": "Ember Animated Outlet is a plug'n'play module to support animated route transitions in Ember.js.",
+  "description": "Ember Animated Outlet is a plug'n'play module to support animated route transitions in Ember.js with a focus on mobile devices.",
   "main": "dist/ember-animated-outlet.js",
   "keywords": [
     "ember",
@@ -14,7 +13,8 @@
     "animation",
     "animated",
     "outlet",
-    "transition"
+    "transition",
+    "mobile"
   ],
   "license": "MIT",
   "ignore": [
