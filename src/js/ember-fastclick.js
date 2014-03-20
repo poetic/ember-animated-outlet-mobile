@@ -30,6 +30,49 @@
     enabled: true
   };
 
+  var deviceIsIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
+
+  var fastClick = {
+    findControl: function(labelElement) {
+        debugger
+        if (labelElement.control !== undefined) {
+          return labelElement.control;
+        }
+
+        // All browsers under test that support touch events also support the HTML5 htmlFor attribute
+        if (labelElement.htmlFor) {
+          return document.getElementById(labelElement.htmlFor);
+        }
+
+        // If no for attribute exists, attempt to retrieve the first labellable descendant element
+        // the list of which is defined here: http://www.w3.org/TR/html5/forms.html#category-label
+        return labelElement.querySelector('button, input:not([type=hidden]), keygen, meter, output, progress, select, textarea');
+    },
+    needsFocus: function(target) {
+      switch (target.nodeName.toLowerCase()) {
+        case 'textarea':
+          return true;
+        //case 'select':
+          //return !deviceIsAndroid;
+        case 'input':
+          switch (target.type) {
+          case 'button':
+          case 'checkbox':
+          case 'file':
+          case 'image':
+          case 'radio':
+          case 'submit':
+            return false;
+          }
+
+          // No point in attempting to focus disabled inputs
+          return !target.disabled && !target.readOnly;
+        default:
+          return (/\bneedsfocus\b/).test(target.className);
+        }
+    }
+  }
+
 
   // Temporarily disable touch to prevent duplicate clicks
   function disableTouch() {
@@ -47,6 +90,7 @@
         moved;
 
       if (!touch.enabled) return;
+
 
       var touchHandler = function(evt, triggeringManager) {
         // Track touch events to see how far the user's finger has moved
@@ -81,9 +125,39 @@
                 evt.stopImmediatePropagation();
                 // All tests have passed, trigger click event
                 if (touch.enabled) {
-                  setTimeout(function(){
-                    $(evt.target).click();
-                  }, 50);
+
+                  var control
+                  var $target = $(evt.target);
+                  var type    = $target.attr('type');
+                  var tagName = evt.target.tagName.toLowerCase()
+
+                  if(tagName === 'label') {
+                    control = $(fastClick.findControl(evt.target));
+                    if(control.attr('type') == 'checkbox') {
+                      control.prop('checked', !control.prop('checked')).change()
+                    } else {
+                      $(control).focus()
+                    }
+
+                  } else if(type == 'checkbox') {
+                    $target.prop('checked', !$target.prop('checked')).change()
+
+                  } else if (fastClick.needsFocus(evt.target)){
+                      if (deviceIsIOS && evt.target.setSelectionRange && evt.target.type.indexOf('date') !== 0 && evt.target.type !== 'time') {
+                        length = evt.target.value.length;
+                        evt.target.setSelectionRange(length, length);
+                      } else {
+                        evt.target.focus();
+                      }
+
+                  } else {
+                    if (document.activeElement && document.activeElement !== evt.target) {
+                      document.activeElement.blur();
+                    }
+
+                    $target.click();
+                  }
+
                 }
               }
               touch.start = false;

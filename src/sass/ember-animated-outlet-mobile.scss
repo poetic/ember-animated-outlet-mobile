@@ -5,6 +5,7 @@
     height: 100%;
     width: 100%;
     @include transform(translate3d(0, 0, 0));
+    -webkit-transform: translateZ(0);
 
     & > .ember-view {
         position: absolute;
