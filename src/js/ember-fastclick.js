@@ -30,11 +30,11 @@
     enabled: true
   };
 
+  var deviceIsAndroid = navigator.userAgent.indexOf('Android') > 0;
   var deviceIsIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
 
   var fastClick = {
     findControl: function(labelElement) {
-        debugger
         if (labelElement.control !== undefined) {
           return labelElement.control;
         }
@@ -52,8 +52,8 @@
       switch (target.nodeName.toLowerCase()) {
         case 'textarea':
           return true;
-        //case 'select':
-          //return !deviceIsAndroid;
+        case 'select':
+          return !deviceIsAndroid;
         case 'input':
           switch (target.type) {
           case 'button':
