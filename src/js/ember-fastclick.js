@@ -142,7 +142,7 @@
                   } else if(type == 'checkbox') {
                     $target.prop('checked', !$target.prop('checked')).change()
 
-                  } else if (fastClick.needsFocus(evt.target)){
+                  } else if (!$target.hasClass('needsclick') && fastClick.needsFocus(evt.target)){
                       if (deviceIsIOS && evt.target.setSelectionRange && evt.target.type.indexOf('date') !== 0 && evt.target.type !== 'time') {
                         length = evt.target.value.length;
                         evt.target.setSelectionRange(length, length);

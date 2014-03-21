@@ -430,8 +430,7 @@ Ember.AnimatedContainerView.registerEffect('fade', function(ct, newView, oldView
 Ember.AnimatedContainerView.registerEffect('flip', function(ct, newView, oldView, callback) {
     var ctEl = ct.$(),
         newEl = newView.$(),
-        oldEl = oldView.$(),
-        duration = 650;
+        oldEl = oldView.$();
     ctEl.wrap('<div class="ember-animated-container-flip-wrap"></div>')
     ctEl.addClass('ember-animated-container-flip-ct');
     newEl.addClass('ember-animated-container-flip-new');
@@ -444,10 +443,9 @@ Ember.AnimatedContainerView.registerEffect('flip', function(ct, newView, oldView
             ctEl.removeClass('ember-animated-container-flip-ct-flipping');
             newEl.removeClass('ember-animated-container-flip-new');
             callback();
-        }, duration);
+        }, 650);
     }, 0);
 });
-
 (function() {
 
 var slide = function(ct, newView, oldView, callback, direction, slow) {
@@ -688,7 +686,7 @@ Ember.AnimatedContainerView.registerEffect('slideOverDown', function(ct, newView
                   } else if(type == 'checkbox') {
                     $target.prop('checked', !$target.prop('checked')).change()
 
-                  } else if (fastClick.needsFocus(evt.target)){
+                  } else if (!$target.hasClass('needsclick') && fastClick.needsFocus(evt.target)){
                       if (deviceIsIOS && evt.target.setSelectionRange && evt.target.type.indexOf('date') !== 0 && evt.target.type !== 'time') {
                         length = evt.target.value.length;
                         evt.target.setSelectionRange(length, length);
