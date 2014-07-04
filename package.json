@@ -1,6 +1,6 @@
 {
   "name": "ember-animated-outlet-mobile",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "homepage": "https://github.com/poetic/ember-animated-outlet-mobile",
   "repository": "https://github.com/poetic/ember-animated-outlet-mobile",
   "devDependencies": {
@@ -9,8 +9,7 @@
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-compass": "~0.1.3",
     "grunt-contrib-watch": "~0.3.1",
-    "express": "~3.1.0",
-    "broccoli-static-compiler": "^0.1.4"
+    "express": "~3.1.0"
   },
   "keywords": [
     "ember-addon",
@@ -26,5 +25,8 @@
     "main": "ember-addon"
   },
   "license": "MIT",
-  "author": "Jake Craige <jake@poeticsystems.com>"
+  "author": "Jake Craige <jake@poeticsystems.com>",
+  "dependencies": {
+    "broccoli-static-compiler": "^0.1.4"
+  }
 }
