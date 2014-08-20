@@ -3,9 +3,10 @@
 @submodule ember-routing
 */
 
-var get = Ember.get, set = Ember.set;
-
 Ember.onLoad('Ember.Handlebars', function(Handlebars) {
+  
+  var get = Ember.get, set = Ember.set;
+  
   var resolveParams = Ember.Router.resolveParams,
       isSimpleClick = Ember.ViewUtils.isSimpleClick;
 
