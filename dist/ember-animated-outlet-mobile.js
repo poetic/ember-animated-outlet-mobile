@@ -1,6 +1,6 @@
 /**
   Write me...
-
+ 
   @class AnimatedContainerView
   @namespace Ember
   @extends Ember.ContainerView
@@ -8,14 +8,14 @@
 Ember.AnimatedContainerView = Ember.ContainerView.extend({
 
     classNames: ['ember-animated-container'],
-
+    
     init: function() {
         this._super();
         //Register this view, so queued effects can be related with this view by name
         Ember.AnimatedContainerView._views[this.get('name')] = this;
         this._isAnimating = false;
     },
-
+    
     willDestroy: function() {
         this._super();
         //Clean up
@@ -23,7 +23,7 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
         delete Ember.AnimatedContainerView._views[name];
         delete Ember.AnimatedContainerView._animationQueue[name];
     },
-
+    
     //Override parent method
     _currentViewWillChange: Ember.beforeObserver(function() {
         var currentView = Ember.get(this, 'currentView');
@@ -108,7 +108,7 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
     enqueueAnimation: function(effect) {
         Ember.AnimatedContainerView._animationQueue[this.get('name')] = effect;
     },
-
+    
     setCurrentViewAnimated: function(currentView, effect) {
         this.enqueueAnimation(effect);
         this.set('currentView', currentView);
@@ -117,10 +117,10 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
 });
 
 Ember.AnimatedContainerView.reopenClass({
-
+    
     /**
       All animated outlets registers itself in this hash
-
+       
       @private
       @property {Object} _views
     */
@@ -136,7 +136,7 @@ Ember.AnimatedContainerView.reopenClass({
 
     /**
       Enqueue effects to be executed by the given outlets when the next route transition happens.
-
+      
       @param {Object} animations A hash with keys corresponding to outlet views and values with the desired animation effect.
     */
     enqueueAnimations: function(animations) {
@@ -157,9 +157,9 @@ Ember.AnimatedContainerView.reopenClass({
 
     /**
       Register a new effect.
-
+     
       The `callback` function will be passed the following parameters:
-
+     
       - The `Ember.AnimatedContainerView` instance.
       - The new view.
       - The old view.
@@ -384,9 +384,9 @@ Ember.ControllerMixin.reopen({
     /**
       Works as {@link Ember.ControllerMixin.transitionToRoute}} except that it takes a third parameter, `animations`,
       which will enqueue animations.
-
+     
       `animations` should be an object with outlet names as keys and effect names as value.
-
+     
       @param name
       @param animations {Object} Animations to enqueue
       @param model
@@ -664,14 +664,18 @@ Ember.AnimatedContainerView.registerEffect('slideOverDown', function(ct, newView
             if (touch.start) {
               moved = Math.max(Math.abs(evt.originalEvent.changedTouches[0].clientX - touch.x),
                     Math.abs(evt.originalEvent.changedTouches[0].clientY - touch.y));
-              if (moved < 20) {
+
+              var $target = $(evt.target);
+
+              if(deviceIsAndroid && $target.is(':input,select')) {
+                // Android fix for input's and selects
+              } else if (moved < 20) {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
                 // All tests have passed, trigger click event
                 if (touch.enabled) {
 
                   var control
-                  var $target = $(evt.target);
                   var type    = $target.attr('type');
                   var tagName = evt.target.tagName.toLowerCase()
 
@@ -739,18 +743,18 @@ Ember.AnimatedContainerView.registerEffect('slideOverDown', function(ct, newView
 
       rootElement.delegate('[data-ember-action]', event + '.ember', function(evt) {
         var actionId = Ember.$(evt.currentTarget).attr('data-ember-action'),
-            action   = Ember.Handlebars.ActionHelper.registeredActions[actionId];
+          action   = Ember.Handlebars.ActionHelper.registeredActions[actionId],
+          handler  = null;
 
-        if (action && action.eventName === eventName) {
-          if (touch.enabled) {
+        if (action && action.handler && action.eventName === eventName) {
+          handler = action.handler;
+
+          if (touch.enabled)
             disableTouch();
-          } else {
+          else
             return false;
-          }
 
-          if(action.handler) {
-            return action.handler(evt);
-          }
+          return handler(evt);
         }
       });
 

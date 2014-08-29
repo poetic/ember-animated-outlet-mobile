@@ -120,14 +120,18 @@
             if (touch.start) {
               moved = Math.max(Math.abs(evt.originalEvent.changedTouches[0].clientX - touch.x),
                     Math.abs(evt.originalEvent.changedTouches[0].clientY - touch.y));
-              if (moved < 20) {
+
+              var $target = $(evt.target);
+
+              if(deviceIsAndroid && $target.is(':input,select')) {
+                // Android fix for input's and selects
+              } else if (moved < 20) {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
                 // All tests have passed, trigger click event
                 if (touch.enabled) {
 
                   var control
-                  var $target = $(evt.target);
                   var type    = $target.attr('type');
                   var tagName = evt.target.tagName.toLowerCase()
 
@@ -196,9 +200,11 @@
       rootElement.delegate('[data-ember-action]', event + '.ember', function(evt) {
         var actionId = Ember.$(evt.currentTarget).attr('data-ember-action'),
           action   = Ember.Handlebars.ActionHelper.registeredActions[actionId],
-          handler  = action.handler;
+          handler  = null;
 
-        if (action.eventName === eventName) {
+        if (action && action.handler && action.eventName === eventName) {
+          handler = action.handler;
+
           if (touch.enabled)
             disableTouch();
           else
