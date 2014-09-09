@@ -236,7 +236,7 @@ Ember.onLoad('Ember.Handlebars', function(Handlebars) {
   }
 
   function args(linkView, router, route) {
-    var ret = get(linkView,'routeArgs').slice(),
+    var ret = get(linkView,'parameters.params').slice(),
         animations = linkView.parameters.animations;
     ret.splice(1,0,animations);
     return ret;
