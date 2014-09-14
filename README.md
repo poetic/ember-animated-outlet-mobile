@@ -1,4 +1,7 @@
-# Ember Animated Outlet Mobile
+
+## Deprecation notice
+
+We will no longer be maintaining this repo as we will be using [liquid-fire](https://github.com/ef4/liquid-fire) on future projects. 
 
 Fork of [Ember Animated Outlet](https://travis-ci.org/billysbilling/ember-animated-outlet)
 
