@@ -1,6 +1,6 @@
 /**
   Write me...
- 
+
   @class AnimatedContainerView
   @namespace Ember
   @extends Ember.ContainerView
@@ -8,14 +8,14 @@
 Ember.AnimatedContainerView = Ember.ContainerView.extend({
 
     classNames: ['ember-animated-container'],
-    
+
     init: function() {
         this._super();
         //Register this view, so queued effects can be related with this view by name
         Ember.AnimatedContainerView._views[this.get('name')] = this;
         this._isAnimating = false;
     },
-    
+
     willDestroy: function() {
         this._super();
         //Clean up
@@ -23,7 +23,7 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
         delete Ember.AnimatedContainerView._views[name];
         delete Ember.AnimatedContainerView._animationQueue[name];
     },
-    
+
     //Override parent method
     _currentViewWillChange: Ember.beforeObserver(function() {
         var currentView = Ember.get(this, 'currentView');
@@ -108,7 +108,7 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
     enqueueAnimation: function(effect) {
         Ember.AnimatedContainerView._animationQueue[this.get('name')] = effect;
     },
-    
+
     setCurrentViewAnimated: function(currentView, effect) {
         this.enqueueAnimation(effect);
         this.set('currentView', currentView);
@@ -117,10 +117,10 @@ Ember.AnimatedContainerView = Ember.ContainerView.extend({
 });
 
 Ember.AnimatedContainerView.reopenClass({
-    
+
     /**
       All animated outlets registers itself in this hash
-       
+
       @private
       @property {Object} _views
     */
@@ -136,10 +136,15 @@ Ember.AnimatedContainerView.reopenClass({
 
     /**
       Enqueue effects to be executed by the given outlets when the next route transition happens.
-      
+
       @param {Object} animations A hash with keys corresponding to outlet views and values with the desired animation effect.
     */
     enqueueAnimations: function(animations) {
+        // Animations cause race conditions in testing so we just disable them
+        if (Ember.testing) {
+          return;
+        }
+
         for (var name in animations) {
             if (!animations.hasOwnProperty(name)) continue;
             this._animationQueue[name] = animations[name];
@@ -157,9 +162,9 @@ Ember.AnimatedContainerView.reopenClass({
 
     /**
       Register a new effect.
-     
+
       The `callback` function will be passed the following parameters:
-     
+
       - The `Ember.AnimatedContainerView` instance.
       - The new view.
       - The old view.
