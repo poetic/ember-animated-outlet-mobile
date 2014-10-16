@@ -17,7 +17,6 @@ module.exports = function(grunt) {
                     'src/js/route.js',
                     'src/js/controller-mixin.js',
                     'src/js/effects/*.js',
-                    'src/js/ember-fastclick.js'
                 ],
                 dest: 'dist/ember-animated-outlet-mobile.js'
             }
